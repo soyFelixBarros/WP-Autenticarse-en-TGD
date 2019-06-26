@@ -24,8 +24,11 @@ class Plugin
         $code = get_query_var( 'code' );
 
         if ( !empty( $code ) ) {
-            $tgd = new Services\Tgd( $code );
-            var_dump($tgd);die;
+            $tgd = new Services\TGDService( $code );
+
+            $user = $tgd->getUserByCode( $code );
+
+            var_dump( $user );die;
         //     // wp_redirect( home_url() );
         //     // exit;
         }
