@@ -1,0 +1,10 @@
+{
+    "autoload": {
+        "psr-4": {
+            "WpAutenticarseEnTGD\\": "inc/classes"
+        }
+    },
+    "require": {
+        "adoy/oauth2": "^1.3"
+    }
+}
