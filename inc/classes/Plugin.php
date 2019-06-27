@@ -29,12 +29,14 @@ class Plugin
             $user = get_user_by( 'id', $user_id ); 
             
             if ( $user ) {
+                var_dump($user);
                 wp_set_current_user( $user_id, $user->user_login );
                 wp_set_auth_cookie( $user_id );
                 do_action( 'wp_login', $user->user_login );
             }
-        //     // wp_redirect( home_url() );
-        //     // exit;
+
+            wp_redirect( home_url() );
+            exit;
         }
     }
 

@@ -66,12 +66,15 @@ class TGDService
         $cuil = $personaInfo['cuitCuil'];
         $user_id = username_exists( $cuil );
 
-        if ( !$user_id and email_exists($user_email) == false ) {
-            $user_id = wp_create_user(
-                $cuil, // username
-                NULL,//$personaInfo['cuitCuil'], // password
-                $user_email // correo
-            );
+        if ( !$user_id and email_exists($user_email) == false ) {          
+            $user_id = wp_insert_user(
+                array(
+                    'user_login'  =>  $cuil, // username
+                    'user_pass'   =>  NULL,  // When creating a new user, `user_pass` is expected.
+                    'user_email' => $user_email,
+                    'role' => 'TGD'
+                )
+            ) ;
         }
         
         $user_id = wp_update_user(
