@@ -68,8 +68,9 @@ class OAuthClient
         if ($method == 'POST') {
             $options = array('form_params' => $query);
         }
-        $response = $this->httpClient->createRequest($method, $uri, $options);
-        $data     = json_decode($response->getBody(), true);
+
+        $response = $this->httpClient->request($method, $uri, $options);
+        $data = json_decode($response->getBody()->getContents(), true);
         return $data;
     }
 }
