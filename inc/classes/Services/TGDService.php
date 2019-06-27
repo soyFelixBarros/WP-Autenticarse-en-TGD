@@ -63,28 +63,35 @@ class TGDService
     {
         // Busco si el usuario existe en WordPress
         $user_email = $personaInfo['emails'][0]['email'];
-        $cuil = $personaInfo['cuitCuil'];
-        $user_id = username_exists( $cuil );
+        $cuil       = $personaInfo['cuitCuil'];
+        $first_name = $personaInfo['apellidos'];
+        $last_name  = $personaInfo['nombres'];
+        $user_id    = username_exists( $cuil );
 
         if ( !$user_id and email_exists($user_email) == false ) {          
             $user_id = wp_insert_user(
                 array(
-                    'user_login'  =>  $cuil, // username
-                    'user_pass'   =>  NULL,  // When creating a new user, `user_pass` is expected.
+                    'user_login' => $cuil,         // username
+                    'user_pass'  => NULL,          // When creating a new user, `user_pass` is expected.
                     'user_email' => $user_email,
-                    'role' => 'TGD'
+                    'nickname'   => $user_email,
+                    'first_name' => $first_name,
+                    'last_name'  => $last_name,
                 )
             ) ;
+
+            // Asignamos el rol (TGD) cuando creamos al usuario por primera vez
+            wp_update_user( array ('ID' => $user_id, 'role' => 'tgd') ) ;
+        } else {
+            $user_id = wp_update_user(
+                array(
+                    'ID'         => $user_id,
+                    'nickname'   => $user_email,
+                    'first_name' => $first_name,
+                    'last_name'  => $last_name,
+                )
+            );
         }
-        
-        $user_id = wp_update_user(
-            array(
-                'ID'         => $user_id,
-                'nickname'   => $user_email,
-                'first_name' => $personaInfo['apellidos'],
-                'last_name'  => $personaInfo['nombres'],
-            )
-        );
 
         return $user_id;
     }
