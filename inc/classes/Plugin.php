@@ -3,6 +3,7 @@
 namespace WpAutenticarseEnTGD;
 
 use WpAutenticarseEnTGD\Services;
+
 /**
  * Esta es la clase para este plugin.
  */
@@ -14,6 +15,7 @@ class Plugin
     public function addMyRewrites()
     {
         add_rewrite_tag( '%code%', '([^&]+)' );
+        add_rewrite_tag( '%state%', '([^&]+)' );
     }
 
     /**
@@ -21,22 +23,28 @@ class Plugin
      */
     public function addTemplateRedirect()
     {
-        $code = get_query_var( 'code' );
+        $code  = get_query_var( 'code', null );
+        $state = get_query_var( 'state', null );
 
-        if ( !empty( $code ) ) {
-            $tgd = new Services\TGDService( $code );
+        if ( ! is_null( $code ) ) {
+            $tgd     = new Services\TGDService( $code );
             $user_id = $tgd->getUserByCode( $code );
-            $user = get_user_by( 'id', $user_id ); 
-            
-            // Inicio de sesión de usuario
+            $user    = get_user_by( 'id', $user_id );
+
+            // Inicio de sesión en WordPress
             if ( $user ) {
                 wp_set_current_user( $user_id, $user->user_login );
                 wp_set_auth_cookie( $user_id );
                 do_action( 'wp_login', $user->user_login );
             }
 
-             // Redireccionamos a la pagina principal
-            wp_redirect( home_url() );
+            // Comprobamos si inicio sesión desde un popup
+            if ( $state === 'popup' ) {
+                echo "<script>window.close();</script>"; // Cerramos el popup
+            } else {
+                wp_redirect( home_url() ); // Redireccionamos
+            }
+
             exit;
         }
     }
